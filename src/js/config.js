@@ -13,21 +13,35 @@
  */
 window.LAUNCHER_CONFIG = {
     apps: [
-        { id: 'xvvl3S1TT1.TizenTubeStandalone', label: 'YouTube', brand: 'youtube' },
-        { id: 'rJeHak5zRg.Spotify', label: 'Spotify' },
-        { id: 'Jz7aUrV2Q4.Twitch', label: 'Twitch' },
-        { id: 'E0P3lRI4H7.MYTF1', label: 'TF1+' },
+        { id: '9Ur5IzDKqV.TizenYouTube', label: 'YouTube', brand: 'youtube' },
         { id: 'org.tizen.netflix-app', label: 'Netflix' },
-        { id: 'org.tizen.primevideo', label: 'Prime Video' },
+        { id: 'com.samsung.tv.aria-video', label: 'Apple TV' },
+        { id: 'evKhCgZelL.AmazonIgnitionLauncher2', label: 'Prime Video' },
         { id: 'MCmYXNxgcu.DisneyPlus', label: 'Disney+' },
-        { id: 'com.samsung.tv.aria-video', label: 'Apple TV' }
+        { id: 'cj37Ni3qXM.HBONow', label: 'HBO Max' },
+        { id: 'skysh0WTIM.SkyShowtime', label: 'SkyShowtime' },
+        { id: 'uW3QTCzW3B.Player', label: 'Player.pl' },
+        { id: 'ZjkOaPvSp1.PolsatBoxGo', label: 'Polsat Box Go' },
+        { id: 'VODTVP2017.vodtvp', label: 'TVP VOD' },
+        { id: 'rJeHak5zRg.Spotify', label: 'Spotify' },
+        { id: '5SLwh7m3En.TizenYouTubeKids', label: 'YouTube Kids' }
     ],
 
-    inputs: [
-        { hdmi: 1, label: 'Nintendo Switch 2', brand: 'switch' },
-        { hdmi: 2, label: 'PlayStation 5', brand: 'playstation' },
-        { hdmi: 4, label: 'Xbox Series X', brand: 'xbox' }
-    ],
+    // No consoles row on this TV.
+    inputs: [],
+
+    /*
+     * Home widgets above the apps row. Each one stays hidden while its entry is null; put your
+     * values in js/config.local.js (gitignored), since a calendar URL and a bus stop are personal.
+     *   weather:     { name: 'City', latitude: 0.00, longitude: 0.00 }   (Open-Meteo)
+     *   calendarUrl: public iCal (.ics) address, e.g. an iCloud "public calendar" link
+     *   transit:     { stopName: 'Stop', stops: [{ id: 1234, name: 'Direction' }] }   (ZTM Gdańsk stopId)
+     */
+    widgets: {
+        weather: null,
+        calendarUrl: null,
+        transit: null
+    },
 
     // How an input tile switches the TV. See README "HDMI inputs".
     //   'switch+viewer'  set the TV source, then open Samsung's TV viewer (default)

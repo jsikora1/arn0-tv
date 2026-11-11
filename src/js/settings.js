@@ -110,7 +110,7 @@
         return [
             { label: 'Background', value: wallpaperSummary(), run: function () { UI.show('bg'); } },
             { label: 'Apps on Home', value: Home.homeItems().length + ' apps', run: function () { UI.show('homeapps'); } },
-            { label: 'Consoles', value: shown + ' on Home', run: function () { UI.show('consoles'); } },
+            { label: 'HDMI devices', value: shown + ' on Home', run: function () { UI.show('consoles'); } },
             { label: 'Appearance', value: Appearance.font(a.font).label + ' · ' + (a.clock === '12h' ? '12-hour' : '24-hour'), run: function () { UI.show('appearance'); } },
             { label: 'Navigation sound', value: soundSummary(), run: function () { UI.show('sound-settings'); } },
             { label: 'Screen saver', value: screensaverSummary(), run: function () { UI.show('screensaver-settings'); } },
@@ -357,12 +357,13 @@
         ed.items = Home.homeItems().slice();
         var onHome = {};
         ed.items.forEach(function (i) { onHome[i.id] = true; });
-        ed.others = Apps.allSorted(Home.apps(), false).filter(function (a) { return !onHome[a.id]; });
+        var hiddenInputs = Home.inputs().filter(function (i) { return i.hidden; }).map(Home.inputItem);
+        ed.others = hiddenInputs.concat(Apps.allSorted(Home.apps(), false).filter(function (a) { return !onHome[a.id]; }));
     }
 
     function edRow(item, moving) {
         var row = el('div', 'ed-item' + (moving ? ' moving' : ''));
-        row.appendChild(Home.miniTile(item));
+        row.appendChild(item.kind === 'input' ? Home.miniInputTile(item.input) : Home.miniTile(item));
         row.appendChild(el('span', 'ed-label', item.label));
         if (moving) row.appendChild(el('span', 'ed-move', '↕'));
         return row;
@@ -516,7 +517,7 @@
                 run: function () { consoleMenu(i); }
             };
         });
-        entries.push({ label: '+ Add a console', value: '', run: addConsole });
+        entries.push({ label: '+ Add HDMI device', value: '', run: addConsole });
         return entries;
     }
 
@@ -530,7 +531,6 @@
 
     function consoleMenu(i) {
         var c = Home.inputs()[i];
-        var count = Home.inputs().length;
         var status = Home.hdmiStatus();
         var options = [
             {
@@ -576,12 +576,7 @@
                 run: function () { editInputs(function (l) { l[i].hidden = !c.hidden; }); }
             }
         ];
-        if (i > 0) {
-            options.push({ label: 'Move earlier', run: function () { editInputs(function (l) { l.splice(i - 1, 0, l.splice(i, 1)[0]); }); } });
-        }
-        if (i < count - 1) {
-            options.push({ label: 'Move later', run: function () { editInputs(function (l) { l.splice(i + 1, 0, l.splice(i, 1)[0]); }); } });
-        }
+        // Order on Home is set in Apps on Home, together with the apps.
         options.push({
             label: 'Remove', run: function () {
                 UI.menu('Remove ' + c.label + '?', [
@@ -598,9 +593,9 @@
         var used = {};
         Home.inputs().forEach(function (i) { used[i.hdmi] = true; });
         var port = [1, 2, 3, 4].find(function (n) { return !used[n]; }) || 1;
-        editInputs(function (l) { l.push({ hdmi: port, label: 'Console', brand: '' }); });
+        editInputs(function (l) { l.push({ hdmi: port, label: 'HDMI ' + port, brand: '' }); });
         var index = Home.inputs().length - 1;
-        rename('Console', function (name) { editInputs(function (l) { l[index].label = name; }); });
+        rename('HDMI ' + port, function (name) { editInputs(function (l) { l[index].label = name; }); });
     }
 
     // ---------- Rename dialog (uses Samsung's on-screen keyboard)

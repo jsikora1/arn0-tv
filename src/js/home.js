@@ -106,21 +106,15 @@
         return wrap;
     }
 
+    // HDMI input shown as an app-sized tile in the apps row; the dot shows the port is connected.
     function inputTile(input) {
-        var brand = findBrand(input.brand || '') || { bg: '#2a2f3a', fg: '#fff', mark: null };
-        var wrap = el('div', 'input');
-        var tile = el('div', 'tile');
-        tile.style.background = brand.bg;
-        if (brand.mark) tile.appendChild(markEl(brand));
-        var meta = el('div', 'meta');
-        meta.appendChild(el('div', 'name', input.label));
-        var port = el('div', 'port');
-        var dot = el('span', 'dot');
-        port.appendChild(dot);
-        port.appendChild(document.createTextNode('HDMI ' + input.hdmi));
-        meta.appendChild(port);
-        tile.appendChild(meta);
+        var brand = findBrand(input.brand || '');
+        var wrap = el('div', 'app');
+        var tile = tileFace({ label: input.label, brand: brand && brand.mark ? brand : null });
+        var dot = el('span', 'dot corner');
+        tile.appendChild(dot);
         wrap.appendChild(tile);
+        wrap.appendChild(el('div', 'label', input.label));
         wrap._item = { kind: 'input', hdmi: input.hdmi, label: input.label, method: input.method };
         wrap._dot = dot;
         return wrap;
@@ -150,15 +144,57 @@
         return Prefs.get().home || cfg.apps || [];
     }
 
-    function homeItems() {
-        return Apps.curated(state.apps, { apps: homeEntries() });
+    function inputItem(input) {
+        return { kind: 'input', hdmi: input.hdmi, label: input.label, method: input.method, input: input };
     }
 
+    /*
+     * One ordered Home row of apps and HDMI devices. A Home entry is either an app ({ id } or
+     * { match }) or an HDMI device ({ input: <port> }). Visible devices not placed in the list
+     * yet (e.g. just added) go at the end.
+     */
+    function homeItems() {
+        var list = inputs();
+        var placed = {};
+        var used = {};
+        var out = [];
+        homeEntries().forEach(function (entry) {
+            if (entry.input != null) {
+                var input = list.find(function (i) { return i.hdmi === entry.input; });
+                if (input && !input.hidden && !placed[input.hdmi]) {
+                    placed[input.hdmi] = true;
+                    out.push(inputItem(input));
+                }
+                return;
+            }
+            var app = Apps.curated(state.apps, { apps: [entry] })[0];
+            if (app && !used[app.id]) {
+                used[app.id] = true;
+                out.push(app);
+            }
+        });
+        list.forEach(function (input) {
+            if (!input.hidden && !placed[input.hdmi]) out.push(inputItem(input));
+        });
+        return out;
+    }
+
+    // Saves the Home order; HDMI devices left out of it become hidden, those in it visible.
     function setHomeItems(items) {
+        var onHome = {};
         Prefs.get().home = items.map(function (i) {
+            if (i.kind === 'input') {
+                onHome[i.hdmi] = true;
+                return { input: i.hdmi };
+            }
             var entry = { id: i.id, label: i.label };
             if (i.brand) entry.brand = i.brand.key;
             return entry;
+        });
+        Prefs.get().inputs = inputs().map(function (i) {
+            var copy = Object.assign({}, i);
+            copy.hidden = !onHome[i.hdmi];
+            return copy;
         });
         Prefs.save();
         renderHome();
@@ -169,22 +205,19 @@
         row.innerHTML = '';
         var items = homeItems();
         if (!items.length) items = Apps.allSorted(state.apps, false).slice(0, 8);
-        items.forEach(function (item) { row.appendChild(appTile(item)); });
-        row.appendChild(allAppsTile());
-
-        var row2 = $('inputs-row');
-        row2.innerHTML = '';
-        inputs().forEach(function (input) {
-            if (!input.hidden) row2.appendChild(inputTile(input));
+        // HDMI devices (decoder, consoles) are ordinary tiles in the same row as apps.
+        items.forEach(function (item) {
+            row.appendChild(item.kind === 'input' ? inputTile(item.input) : appTile(item));
         });
-        $('inputs-section').classList.toggle('hidden', !row2.children.length);
+        row.appendChild(allAppsTile());
+        $('inputs-section').classList.add('hidden');
         applyInputStatus();
         if (UI.isVisible('home')) UI.refresh();
     }
 
     function applyInputStatus() {
-        UI.children($('inputs-row')).forEach(function (tile) {
-            tile._dot.classList.toggle('on', state.hdmi[tile._item.hdmi] === true);
+        UI.children($('apps-row')).forEach(function (tile) {
+            if (tile._dot) tile._dot.classList.toggle('on', state.hdmi[tile._item.hdmi] === true);
         });
     }
 
@@ -410,7 +443,7 @@
             startRow: 1,
             hints: [['OK', 'Open'], ['▲', 'Settings']],
             rows: function () {
-                return [[$('gear')], UI.children($('apps-row')), UI.children($('inputs-row'))];
+                return [[$('gear')], UI.children($('apps-row'))];
             },
             activate: function (item) {
                 if (item.kind === 'app') launchApp(item);
@@ -485,6 +518,7 @@
         init: init,
         apps: function () { return state.apps; },
         homeItems: homeItems,
+        inputItem: inputItem,
         setHomeItems: setHomeItems,
         inputs: inputs,
         setInputs: setInputs,

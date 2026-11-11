@@ -21,6 +21,27 @@
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                 </svg>
             </div>
+            <div id="widgets">
+                <div id="weather-widget" class="widget hidden">
+                    <svg id="clockface" viewBox="0 0 200 200"></svg>
+                    <div id="w-weather">
+                        <div id="w-city"></div>
+                        <div id="w-now"><div id="w-temp">--°</div><div id="w-icon"></div></div>
+                        <div id="w-cond"></div>
+                        <div id="w-hl"></div>
+                        <div id="w-hours"></div>
+                    </div>
+                </div>
+                <div id="cal-widget" class="widget hidden">
+                    <div id="c-dayname"></div>
+                    <div id="c-date"></div>
+                    <div id="c-list"></div>
+                </div>
+                <div id="transit-widget" class="widget hidden">
+                    <div id="t-head"><span class="t-icon">●</span> <span id="t-stop"></span></div>
+                    <div id="t-list"></div>
+                </div>
+            </div>
             <div id="apps-section" class="shelf">
                 <h2>Apps</h2>
                 <div class="row-viewport"><div id="apps-row" class="row-track"></div></div>
@@ -63,7 +84,7 @@
         </section>
 
         <section id="consoles" class="view page hidden">
-            <header class="page-head"><h1>Consoles</h1></header>
+            <header class="page-head"><h1>HDMI devices</h1></header>
             <ul class="settings-list"></ul>
         </section>
 
@@ -172,6 +193,9 @@
     <script src="js/wallpaper.js"></script>
     <script src="js/appearance.js"></script>
     <script src="js/weather.js"></script>
+    <script src="js/widget-weather.js"></script>
+    <script src="js/widget-calendar.js"></script>
+    <script src="js/widget-transit.js"></script>
     <script src="js/sound.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/render-probe.js"></script>

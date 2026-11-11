@@ -18,6 +18,11 @@
     Weather.start();
     Home.init();
 
+    var widgets = window.LAUNCHER_CONFIG.widgets || {};
+    WeatherWidget.init(widgets.weather);
+    CalendarWidget.init(widgets.calendarUrl);
+    TransitWidget.init(widgets.transit);
+
     // Preview only: open a screen directly, e.g. http://localhost:8080/#settings
     var view = location.hash.slice(1);
     if (window.__TIZEN_MOCK__ && view) {

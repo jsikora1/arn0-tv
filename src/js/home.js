@@ -59,10 +59,18 @@
         img.src = path.charAt(0) === '/' ? 'file://' + path : path;
     }
 
-    // Full-colour brand logo (raster), shown as-is over the brand background.
+    // Full-colour brand logo (raster). `cover` fills the whole tile; otherwise it is
+    // contained with an optional [vertical, horizontal] inset in % (brand.pad).
     function logoEl(brand) {
         var img = new Image();
-        img.className = 'logo-img';
+        img.className = 'logo-img' + (brand.cover ? ' logo-cover' : '');
+        if (!brand.cover) {
+            var p = brand.pad || [12, 8];
+            img.style.top = p[0] + '%';
+            img.style.height = (100 - 2 * p[0]) + '%';
+            img.style.left = p[1] + '%';
+            img.style.width = (100 - 2 * p[1]) + '%';
+        }
         img.src = brand.image;
         return img;
     }
@@ -72,6 +80,7 @@
         if (item.brand) {
             tile.style.background = item.brand.bg;
             if (item.brand.image) {
+                if (item.brand.cover) tile.className = 'tile tile-cover';
                 tile.appendChild(logoEl(item.brand));
             } else if (item.brand.text) {
                 var word = el('div', 'wordmark', item.brand.text);

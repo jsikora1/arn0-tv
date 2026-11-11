@@ -213,6 +213,16 @@ h1, h2 {
     color: var(--fg);
 }
 
+/* Full-colour raster brand logo: centred, contained, with padding. */
+.logo-img {
+    position: absolute;
+    top: 12%;
+    left: 8%;
+    width: 84%;
+    height: 76%;
+    object-fit: contain;
+}
+
 .mark {
     position: absolute;
     top: 26%;

@@ -59,11 +59,21 @@
         img.src = path.charAt(0) === '/' ? 'file://' + path : path;
     }
 
+    // Full-colour brand logo (raster), shown as-is over the brand background.
+    function logoEl(brand) {
+        var img = new Image();
+        img.className = 'logo-img';
+        img.src = brand.image;
+        return img;
+    }
+
     function tileFace(item) {
         var tile = el('div', 'tile');
         if (item.brand) {
             tile.style.background = item.brand.bg;
-            if (item.brand.text) {
+            if (item.brand.image) {
+                tile.appendChild(logoEl(item.brand));
+            } else if (item.brand.text) {
                 var word = el('div', 'wordmark', item.brand.text);
                 word.style.color = item.brand.fg;
                 tile.appendChild(word);
@@ -110,7 +120,7 @@
     function inputTile(input) {
         var brand = findBrand(input.brand || '');
         var wrap = el('div', 'app');
-        var tile = tileFace({ label: input.label, brand: brand && brand.mark ? brand : null });
+        var tile = tileFace({ label: input.label, brand: brand && (brand.mark || brand.image) ? brand : null });
         var dot = el('span', 'dot corner');
         tile.appendChild(dot);
         wrap.appendChild(tile);
@@ -123,7 +133,7 @@
     // Console tile for Settings lists: brand colours and logo only.
     function miniInputTile(input) {
         var brand = findBrand(input.brand || '');
-        return miniTile({ label: input.label, brand: brand && { key: brand.key, bg: brand.bg, fg: brand.fg, mark: brand.mark } });
+        return miniTile({ label: input.label, brand: brand && { key: brand.key, bg: brand.bg, fg: brand.fg, mark: brand.mark, image: brand.image } });
     }
 
     // ---------- Home content

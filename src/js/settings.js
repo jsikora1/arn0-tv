@@ -20,6 +20,7 @@
         { key: 'playstation', label: 'PlayStation' },
         { key: 'xbox', label: 'Xbox' },
         { key: 'switch', label: 'Nintendo Switch' },
+        { key: 'play', label: 'Play' },
         { key: '', label: 'None' }
     ];
 
